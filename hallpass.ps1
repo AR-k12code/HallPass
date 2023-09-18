@@ -95,6 +95,7 @@ if ($students.Count -ge 1) {
 
     #No header file on the students.sd file.
     $students | ConvertTo-CSV -Delimiter '|' -NoTypeInformation -UseQuotes AsNeeded | Select-Object -Skip 1 | Out-File -Path $PSScriptRoot\hallpass\students.sd -Force
+    if ($islinux) { (Get-Content -Raw -Path $PSScriptRoot/hallpass/students.sd) -replace '\n',"`r`n" | Set-Content -Path $PSScriptRoot/hallpass/students.sd }
     $filesToZip.Add("hallpass\students.sd") | Out-Null
 
     
@@ -129,6 +130,7 @@ if ($includeGuardians) {
     if ($guardians.Count -ge 1) {
         #No header file on the students.sd file.
         $guardians | ConvertTo-CSV -Delimiter '|' -NoTypeInformation -UseQuotes AsNeeded | Select-Object -Skip 1 | Out-File -Path $PSScriptRoot\hallpass\guardians.gd -Force
+        if ($islinux) { (Get-Content -Raw -Path $PSScriptRoot/hallpass/guardians.gd) -replace '\n',"`r`n" | Set-Content -Path $PSScriptRoot/hallpass/guardians.gd }
         $filesToZip.Add("hallpass\guardians.gd") | Out-Null
 
     } else {
@@ -167,7 +169,9 @@ if ($IncludeFaculty) {
     $faculty = Import-CSV $PSScriptRoot\files\faculty.csv | Where-Object { $validFacultyIds -contains $PSItem.'employee id' }
 
     $faculty | ConvertTo-CSV -Delimiter '|' -NoTypeInformation -UseQuotes AsNeeded | Select-Object -Skip 1 | Out-File -Path $PSScriptRoot\hallpass\faculty.fd -Force
+    if ($islinux) { (Get-Content -Raw -Path $PSScriptRoot/hallpass/faculty.fd) -replace '\n',"`r`n" | Set-Content -Path $PSScriptRoot/hallpass/faculty.fd }
     $facultyLocations | ConvertTo-CSV -Delimiter '|' -NoTypeInformation -UseQuotes AsNeeded | Select-Object -Skip 1 | Out-File -Path $PSScriptRoot\hallpass\faculty.ld -Force
+    if ($islinux) { (Get-Content -Raw -Path $PSScriptRoot/hallpass/faculty.ld) -replace '\n',"`r`n" | Set-Content -Path $PSScriptRoot/hallpass/faculty.ld }
 
     try {
         Compress-Archive -Path ($authorizationFile,"hallpass\faculty.fd","hallpass\faculty.ld") -CompressionLevel Optimal -DestinationPath ".\hallpass\$($filename)f.zip" -Force
